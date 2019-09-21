@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -euC
+# set -o pipefail
+
+# exec 5>> /tmp/xmosh/shell-script-debug.out
+# BASH_XTRACEFD="5"
+# PS4='$LINENO: '
+# set -x
+
+cd "$(dirname "$0")"
+
+if [ "$#" -lt 2 ]
+then
+  exec 2>&2
+  echo "$(basename "$0") <PDF> <DEST_DIR>"
+  exit 1
+fi
+
+pdf="$1"
+dest="$2"
+
+
+
+wd="$(mktemp -d)"
+function clean () {
+  rm -rf "$wd"
+}
+trap clean EXIT
+
+
+
+
+mkdir -p "$dest"
+text="${dest}/index.txt"
+pdftotext "$pdf" "$text"
+
+
+
+src_html="${wd}/index.html"
+pdftohtml -c "$pdf" "$src_html"
+ls -la "$wd"
+
+rbenv exec bundle exec ruby from-pdf.rb "$src_html" "$dest"
