@@ -76,19 +76,22 @@ class App
   <div id="contents">
 EOT
 
-    outline = Nokogiri::HTML(File.read(@base_path.sub_ext('-outline.html')))
-    outline.search('h1').remove
-    outline.css('a').each do
-      |elem|
-      if href = elem[:href] and n = href.match(/\d+\.html/)
-        elem[:href] = "#page-#{n.to_s.to_i}"
+    outline_file = @base_path.sub_ext('-outline.html')
+    if outline_file.file?
+      outline = Nokogiri::HTML(File.read(outline_file))
+      outline.search('h1').remove
+      outline.css('a').each do
+        |elem|
+        if href = elem[:href] and n = href.match(/\d+\.html/)
+          elem[:href] = "#page-#{n.to_s.to_i}"
+        end
       end
-    end
 
-    @main_html.puts(%Q[<section id="outline" class="outline">])
-    @main_html.puts(outline.css('body > *').to_html)
-    @main_html.puts('<hr />')
-    @main_html.puts(%Q[</section>])
+      @main_html.puts(%Q[<section id="outline" class="outline">])
+      @main_html.puts(outline.css('body > *').to_html)
+      @main_html.puts('<hr />')
+      @main_html.puts(%Q[</section>])
+    end
 
     max_width = 0
 
