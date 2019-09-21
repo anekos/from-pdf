@@ -12,13 +12,21 @@ set -euC
 
 if [ "$#" -lt 2 ]
 then
-  exec 2>&2
+  exec 2>&1
   echo "$(basename "$0") <PDF> <DEST_DIR>"
   exit 1
 fi
 
 pdf="$(realpath "$1")"
 dest="$(realpath "$2")"
+
+
+if [ -e "$dest" ]
+then
+  exec 2>&1
+  echo "Destination directory already exists: ${dest}"
+  exit 1
+fi
 
 
 wd="$(mktemp -d)"
