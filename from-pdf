@@ -8,7 +8,7 @@ set -euC
 # PS4='$LINENO: '
 # set -x
 
-cd "$(dirname "$0")"
+
 
 if [ "$#" -lt 2 ]
 then
@@ -17,9 +17,8 @@ then
   exit 1
 fi
 
-pdf="$1"
-dest="$2"
-
+pdf="$(realpath "$1")"
+dest="$(realpath "$2")"
 
 
 wd="$(mktemp -d)"
@@ -39,6 +38,6 @@ pdftotext "$pdf" "$text"
 
 src_html="${wd}/index.html"
 pdftohtml -c "$pdf" "$src_html"
-ls -la "$wd"
 
+cd "$(dirname "$(readlink "${BASH_SOURCE[0]}")")"
 rbenv exec bundle exec ruby from-pdf.rb "$src_html" "$dest"
